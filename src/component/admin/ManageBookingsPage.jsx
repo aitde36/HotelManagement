@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApiService from '../../service/ApiService';
 import Pagination from '../common/Pagination';
@@ -26,21 +26,27 @@ const ManageBookingsPage = () => {
         fetchBookings();
     }, []);
 
+    // Wrap filterBookings with useCallback to safely include in useEffect dependencies
+    const filterBookings = useCallback(
+        (term) => {
+            if (term === '') {
+                setFilteredBookings(bookings);
+            } else {
+                const filtered = bookings.filter((booking) =>
+                    booking.bookingConfirmationCode &&
+                    booking.bookingConfirmationCode.toLowerCase().includes(term.toLowerCase())
+                );
+                setFilteredBookings(filtered);
+            }
+            setCurrentPage(1);
+        },
+        [bookings] // dependencies for useCallback
+    );
+
+    // Trigger filtering whenever searchTerm changes
     useEffect(() => {
         filterBookings(searchTerm);
-    }, [searchTerm, bookings]);
-
-    const filterBookings = (term) => {
-        if (term === '') {
-            setFilteredBookings(bookings);
-        } else {
-            const filtered = bookings.filter((booking) =>
-                booking.bookingConfirmationCode && booking.bookingConfirmationCode.toLowerCase().includes(term.toLowerCase())
-            );
-            setFilteredBookings(filtered);
-        }
-        setCurrentPage(1);
-    };
+    }, [searchTerm, filterBookings]);
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
