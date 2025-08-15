@@ -3,7 +3,8 @@ import axios from "axios"
 
 export default class ApiService {
 
-    static BASE_URL = "https://hotel-backend-production.up.railway.app"
+    static BASE_URL = "https://proactive-balance-production-cd55.up.railway.app";
+
 
 	//"http://localhost:4040"
 
